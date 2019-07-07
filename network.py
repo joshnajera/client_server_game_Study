@@ -12,25 +12,26 @@ class Network:
         self.addr = (self.host, self.port)
         self.player = self.connect()
         print("Received player: " , self.player)
-    
+
+    def get_player(self):
+        return self.player
+
     def connect(self):
+        """Connects to the game client"""
         try:
             ## Client sockets CONNECT to their given address, instead of binding to them
             self.client.connect(self.addr)
             # loads() unpacks the byte data
-            return pickle.loads(self.client.recv(2048))
+            return self.client.recv(2048).decode()
         except:
             print("Could not connect!")
-            pass
     
     def send(self, player_data):
+        """Sends player information to server"""
         try:
-            # Send player info to server
-            self.client.send(pickle.dumps(player_data))
+            # Send player info (move: ['r','p','s']) to server
+            self.client.send(str.encode(player_data))
             # Get other player data from server
             return pickle.loads(self.client.recv(2048))
         except socket.error as e:
             print(e)
-
-    def get_player(self):
-        return self.player
